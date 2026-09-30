@@ -1,36 +1,44 @@
-# Architecture and technical choices
-
-This is an independent, static **portfolio example**, not extracted or copied from a live customer's Zendesk account.
-
-## Data flow
+# Architecture and activity state
 
 ```mermaid
 flowchart TD
-  A[Search and filter controls] --> B[Update validated UI state]
-  B --> C[Pure filterResources function]
-  D[Fictional data fixtures] --> C
-  E[Local favourites] --> C
-  C --> F[DOM card rendering]
-  B --> G[Browser localStorage]
-  E --> G
+  Fixtures["Fictional posts and replies"] --> Policy["Pure activity decisions"]
+  Reads["Per-user read snapshots"] --> Policy
+  Viewer["Demo identity and role"] --> Policy
+  Policy --> Posts["Post indicators"]
+  Posts --> Parents["Topic and folder summaries"]
+  Open["Explicit post navigation"] --> Reads
+  Filters["Validated search and filters"] --> Render["DOM rendering"]
+  Posts --> Render
+  Parents --> Render
 ```
 
-## Why separate modules?
+## Activity boundary
 
-- `data.js` represents replaceable sample content.
-- `filters.js` is pure and is covered by Node's native test runner.
-- `main.js` manages browser state, rendering and event listeners without needing a framework.
-- `styles.css` uses responsive grid breakpoints to preserve usability on narrow screens.
+`isUnread` considers post creation and replies by people other than the viewer after the last read snapshot. It evaluates all unseen activity, so a newer own reply cannot conceal an earlier unseen reply by someone else.
 
-## Access and security boundary
+For the moderator queue, a reply by any moderator suppresses the indicator for that post. This is the deliberate policy demonstrated here, including when later member activity arrives; it is not a universal Zendesk moderation rule.
 
-All fixtures are public and fictional. The `moderator` boolean illustrates badge presentation only. It does **not** inspect real Zendesk comments or verify an agent's permissions. In a real platform, role-specific user metadata should be returned only from appropriately authorised services; hiding it with CSS or frontend templates is not sufficient protection.
+`unreadPostIds` does not mutate state. Folder and topic counts are projections of this set. Only `markPostRead`, called on explicit post navigation or the post's read button, advances a marker. Rendering, starring, filtering, changing role and opening a parent do not mark posts read.
 
-## Possible future improvements
+A read snapshot is the maximum timestamp of activity visible in that post, rather than the clock time when an unrelated page opened. Later simulated replies use a timestamp after all existing activity. They remain unseen until another explicit read action.
 
-- Live Zendesk Guide integration through an authorised backend.
-- URL-addressable filters, pagination and browser history.
-- Automated browser-based accessibility checks.
-- Moderator indicators from a verified, rate-limited comments service.
+## Storage and migration
 
-All of these are future ideas, not shipped capabilities of this demo.
+Existing v1 filter and favourite keys are retained, so this replacement can reuse the previous demo's preferences. New activity state uses `community-hub-demo.activity.v2`. Invalid post IDs, malformed preferences and unsuitable read markers are discarded. Added replies are capped at 200 to keep the teaching example small.
+
+Storage exceptions are caught, including access to the storage object itself. The interface continues with memory state when storage is unavailable. Read markers have no cross-device synchronisation.
+
+## Rendering and navigation
+
+Fragment routes are `#/browse`, `#/folder/operations`, `#/topic/quality`, `#/post/r2` and `#/article/r1`. Unknown resource links show an explanatory view. Content is inserted through text nodes.
+
+Before rebuilding a list, the renderer records the focused control's stable key. It restores that focus on the replacement element; when removing the last visible favourite, it moves focus to the results heading. New detail views receive heading focus for context.
+
+## Preview
+
+`build-preview.mjs` embeds the stylesheet and the ES modules in dependency order. It removes module import/export declarations but keeps the implementation itself. The generated file has no external runtime dependencies. The modular `index.html` remains the GitHub Pages entry point.
+
+## Production extensions
+
+Live Zendesk Guide theme templates and APIs, verified authorisation, paginated/incremental activity collection, account-backed read state and a cache-refresh policy are separate concerns. They are not claimed as features of this standalone repository.

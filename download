@@ -5,3 +5,7 @@ node_modules/
 !.env.example
 *.pem
 *.key
+coverage/
+test-results/
+playwright-report/
+npm-debug.log*

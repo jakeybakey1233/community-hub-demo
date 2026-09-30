@@ -1,73 +1,102 @@
-# Community Hub — accessible support portal demo
+# Community Hub — support portal and activity tracking
 
-![Illustrative layout preview of the Community Hub demonstration](./screenshots/community-hub-desktop.png)
+[![Tests](https://github.com/jakeybakey1233/community-hub-demo/actions/workflows/tests.yml/badge.svg)](https://github.com/jakeybakey1233/community-hub-demo/actions/workflows/tests.yml)
+[![Browser checks](https://github.com/jakeybakey1233/community-hub-demo/actions/workflows/browser.yml/badge.svg)](https://github.com/jakeybakey1233/community-hub-demo/actions/workflows/browser.yml)
 
-*Illustrative layout preview using fictional data; run the project or visit its GitHub Pages deployment for the live interface.*
+A public reconstruction of community-interface problems relevant to my Zendesk work at the **Department for Education**. Explore articles, open community folders and topics, and see which individual posts have new activity.
 
-[![Tests](https://img.shields.io/badge/tests-Node.js-265c54)](#run-tests) [![HTML](https://img.shields.io/badge/frontend-HTML%20%2F%20CSS%20%2F%20JS-355d76)](#stack)
+**[Live demo](https://jakeybakey1233.github.io/community-hub-demo/)** · [Experience case study](docs/case-study.md) · [Technical decisions](docs/architecture.md)
 
-An **original, AI-assisted portfolio demonstration** of a multi-community support portal. It illustrates problems encountered when extending customer-support platforms: reusable navigation, audience-aware search, consistent filtering, discoverability, favourites and moderation indicators.
+The live URL becomes available after this repository is uploaded and GitHub Pages is enabled. For an immediate offline preview, download the repository and open **`preview.html`**.
 
-> **Important:** This is an **independent demonstration**, not an official service or vendor product. It does not contain employer source code, customer records, real community data or third-party credentials. All example content is fictional. It is a simplified standalone demonstration rather than a production Zendesk theme.
+## What you can try
 
-## Features
+- Search articles and discussions; combine content-type and audience filters.
+- Navigate from a **folder → topic → specific post**, with aggregate unread counts at each level.
+- Open a topic without clearing its posts. Open a post to save a read snapshot for that post only.
+- Add a reply as **another member**, **yourself**, or **a moderator** using the scenario controls.
+- Switch between member and moderator views. Your identity stays the same; the activity policy changes.
+- Save resources to favourites. Preferences and read markers persist across refreshes where browser storage is available.
+- Open actual article and post views, including the fictional discussion replies.
 
-- Search help articles and community discussions by title, topic and description.
-- **All audiences** filter works with both content types; narrow to customers, partners or internal teams.
-- Persistent filters and client-side favourites using browser local storage; safe fallback when storage is blocked.
-- Community-aware breadcrumb, chronological / alphabetical sorting and reset controls.
-- Example moderator-replied indicators populated from fictional fixtures.
-- Responsive, semantic HTML and labelled controls with focus states and a skip link.
-- Testable filtering business logic with Node's built-in test runner.
+## Activity rules
 
-## Try it
+| Situation | Member view | Moderator view |
+| --- | --- | --- |
+| Another member replies after the saved read snapshot | New activity | New activity, unless a moderator has already replied |
+| You add your own reply | Does not create unread activity | Does not create unread activity |
+| Your own reply follows somebody else's unseen reply | The unseen activity stays new | The moderation rule still applies |
+| A moderator has responded | Does not automatically clear another member's unread activity | Suppresses the post's unread queue indicator |
+| You open a folder or topic | Read markers stay unchanged | Read markers stay unchanged |
+| You open a post | Records that post's visible activity as read | Records that post's visible activity as read |
+| Another reply arrives after the post was opened | New again until explicitly read | New again, subject to the moderation rule |
 
-1. Clone this repository, or download its files.
-2. From the repository directory, run `python3 -m http.server 8000` (on Windows, `py -m http.server 8000`).
-3. Open **http://localhost:8000**. Search for `data`, filter to **Community posts**, select **All audiences**, and try starring a result.
+The demo starts with a fictional read baseline of 22 September 2026. Seeded replies make each rule observable immediately. Reset the demo to return to this state.
 
-Because this project uses JavaScript modules, run it via a local HTTP server rather than opening the HTML with the `file://` protocol.
+## Run locally
 
-### Host on GitHub Pages
+Recommended: Node.js 24 (24.15 or newer), or Node.js 22 (22.22.2 or newer). These versions also support the optional development checks. The application and unit tests need no package installation.
 
-This is a static website, so it requires no build step. In the repository's **Settings → Pages**, choose **Deploy from a branch**, branch **main**, folder **/(root)**, and save. Once published, GitHub supplies a URL for your live demo.
+```bash
+npm run serve
+```
 
-## Run tests
+Open `http://127.0.0.1:8000`. Stop the server with Ctrl+C.
 
-Requirements: Node.js 20+; **no package installation needed**.
+Alternatively, open `preview.html` directly. It is generated from the **same source modules and stylesheet**, without external assets. Storage support for `file://` pages varies by browser; use the server for consistent persistent-state behaviour.
+
+```bash
+npm run build:preview
+```
+
+Regenerate the offline preview whenever you change the source.
+
+## Tests and accessibility checks
 
 ```bash
 npm test
 ```
 
-## Stack
+This runs pure filtering, activity and storage regressions. To run the DOM and browser checks:
 
-Vanilla JavaScript ES modules, HTML5, CSS3 and Node.js built-in tests. No framework, backend, credentials or production service access is required. The visual design is an original reconstruction, does not reuse any employer branding, and uses system fonts without external CSS dependencies.
-
-## Repository structure
-
-```text
-├── index.html              # Accessible, responsive page
-├── src/
-│   ├── main.js             # Event handling, state, rendering
-│   ├── filters.js          # Pure filtering and validation functions
-│   ├── data.js             # Fictional example resources
-│   └── styles.css          # Responsive UI
-├── tests/filters.test.js   # Filtering regression tests
-├── docs/architecture.md   # Technical decisions and data flow
-└── screenshots/           # Illustrative layout previews of the standalone demo
+```bash
+npm ci
+npm run test:dom
+npx playwright install chromium
+npm run test:browser
 ```
 
-## Design notes
+The browser check exercises navigation, unread activity, favourites, reload persistence and keyboard focus; checks desktop and mobile layouts; runs axe-core; and captures real screenshots to `screenshots/`. Its GitHub Actions workflow uploads those captures as a downloadable artifact. See [validation notes](docs/validation.md) for the checks completed in this package and their limits.
 
-- Filtering functions are independent of browser DOM code, making them testable.
-- Resource content is inserted with `textContent`, not interpolated HTML.
-- Local storage holds **only** demo filters and fictional resource identifiers.
-- A moderator badge demonstrates a *presentation pattern*, not real Zendesk moderation detection.
-- A real Zendesk implementation would use its theme templates and APIs, with **server-enforced** authorisation for sensitive user metadata.
+Accessibility choices include labelled native controls, visible focus, text alongside blue activity dots, live result announcements, a skip link, readable contrast and focus preservation when a favourite button is rebuilt. Automated checks supplement manual assistive-technology review; they do not establish complete WCAG conformance.
 
-See [architecture and future extensions](./docs/architecture.md) for a more detailed breakdown.
+## Engineering decisions
 
-## Licence
+- **Pure activity rules:** `src/activity.js` has no DOM or storage dependency. Folder and topic summaries reuse the post decisions.
+- **Read snapshots:** viewing one post records the latest visible activity timestamp, without clearing siblings or future replies.
+- **Predictable state:** stored preferences are validated; corrupt or blocked storage has an in-memory fallback.
+- **Safe rendering:** titles, descriptions and reply text use `textContent` rather than interpolated HTML.
+- **Working navigation:** fragment routes support browser back/forward and direct links without a backend or Pages rewrite rules.
+- **Small runtime:** vanilla ES modules and CSS keep the application independent of a framework or build service.
 
-MIT for this original demonstration code. Third-party platforms and trademarks belong to their respective owners.
+## Repository layout
+
+```text
+index.html                   Main module-based interface
+preview.html                 Generated offline preview
+src/activity.js              Unread and read-snapshot decisions
+src/filters.js               Validated search and filtering
+src/storage.js               Optional browser preference storage
+src/data.js                  Fictional folders, topics and content
+src/main.js                  Navigation, events and DOM rendering
+src/styles.css               Responsive presentation
+scripts/                     Local server, preview builder and checks
+tests/                       Domain regressions
+docs/                        Experience, architecture and validation
+```
+
+## Experience and provenance
+
+I worked on DfE customer help-centre and community enhancements, including Zendesk customisation, accessibility, rebranding and sign-in integration. This repository demonstrates a **subset of related interaction problems**; it does not implement the production DfE service, SSO or Zendesk theme APIs.
+
+This independent implementation was developed with AI assistance. The design, data and example identities are fictional. No employer source, private endpoints or customer records are included. Role switching is a demonstration control, not authorisation. MIT applies to this independent example code; no DfE or vendor endorsement is implied.

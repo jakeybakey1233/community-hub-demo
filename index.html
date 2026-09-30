@@ -3,45 +3,63 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="An independent community support portal demo, with search, audience filters, topics and favourites.">
-  <meta name="theme-color" content="#102840">
-  <title>Community Hub | Portfolio demonstration</title>
+  <meta name="description" content="A community support portfolio demo with post activity, persistent read status, audience filters and accessible navigation.">
+  <meta name="theme-color" content="#132f41">
+  <title>Community Hub | Jake Mason</title>
   <link rel="stylesheet" href="./src/styles.css">
   <script type="module" src="./src/main.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
-  <div class="demo-ribbon" role="note"><span class="demo-dot"></span> INDEPENDENT PORTFOLIO DEMO <span class="ribbon-detail">Fictional content · Independent project</span></div>
+  <div class="demo-ribbon">INDEPENDENT PORTFOLIO DEMO <span>Fictional communities and data</span></div>
   <header class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="./index.html" aria-label="Community Hub home"><span class="brand-mark" aria-hidden="true">C<span>H</span></span><span><strong>Community Hub</strong><small>Support & knowledge</small></span></a>
-      <nav class="top-nav" aria-label="Main navigation"><a class="nav-active" href="#main">Explore</a><a href="#how-it-works">About this demo</a><a href="https://github.com/jakeybakey1233/community-hub-demo" target="_blank" rel="noreferrer">Source code <span aria-hidden="true">↗</span></a></nav>
+      <a class="brand" href="#/browse" aria-label="Community Hub home"><span class="brand-mark" aria-hidden="true">CH</span><span><strong>Community Hub</strong><small>Support & knowledge</small></span></a>
+      <nav class="top-nav" aria-label="Main navigation">
+        <a href="#/browse">Explore</a>
+        <a href="https://github.com/jakeybakey1233/community-hub-demo" target="_blank" rel="noreferrer">Source code <span class="sr-only">(opens in a new tab)</span><span aria-hidden="true">↗</span></a>
+      </nav>
     </div>
   </header>
-  <main id="main">
-    <section class="hero" aria-labelledby="hero-title">
+  <main id="main" tabindex="-1">
+    <section class="hero" id="hero" aria-labelledby="hero-title">
       <div class="container hero-inner">
-        <div class="hero-copy"><p class="eyebrow"><span class="status-light"></span> SUPPORT THAT MAKES SENSE</p><h1 id="hero-title">The right answers.<br><em>One place.</em></h1><p class="hero-lede">Explore help articles and community discussions, find resources for your organisation, and save useful posts for later.</p><a class="primary-link" href="#browse">Browse resources <span aria-hidden="true">↗</span></a></div>
-        <div class="hero-panel" aria-label="Community highlights"><div class="panel-top"><span class="panel-label">COMMUNITY OVERVIEW</span><span class="online-pill"><span class="online-dot"></span> Demo data</span></div><p class="panel-headline">Find your answer faster.</p><div class="mini-item"><span class="mini-icon violet" aria-hidden="true">◎</span><span><strong>Knowledge articles</strong><small>Clear, practical guidance</small></span><span aria-hidden="true">↗</span></div><div class="mini-item"><span class="mini-icon mint" aria-hidden="true">⌘</span><span><strong>Community discussions</strong><small>Questions and shared learning</small></span><span aria-hidden="true">↗</span></div><div class="panel-footer"><span class="pulse-icon" aria-hidden="true">✦</span> Built to demonstrate inclusive navigation</div></div>
-      </div>
-      <div class="hero-decoration" aria-hidden="true"></div>
-    </section>
-    <div class="container breadcrumbs"><a href="./index.html">Home</a><span aria-hidden="true">/</span><span id="breadcrumb-current" aria-current="page">All communities</span></div>
-    <section class="container resources-section" id="browse" aria-labelledby="browse-title">
-      <div class="section-heading"><div><p class="section-overline">EXPLORE RESOURCES</p><h2 id="browse-title">What can we help with?</h2><p class="muted">Search and filter resources across our fictional communities.</p></div><div class="section-number">01 <span>/ 02</span></div></div>
-      <form id="search-form" role="search" class="search-form"><label for="search-input">Search the hub</label><div class="search-line"><span class="search-symbol" aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="Try ‘billing’, ‘data’ or ‘access’…" autocomplete="off"><button type="submit" class="search-button">Search <span aria-hidden="true">→</span></button></div></form>
-      <div class="layout">
-        <aside class="filter-panel" aria-labelledby="filters-heading"><div class="filter-heading"><h3 id="filters-heading">Filters</h3><button type="button" id="reset-filters" class="text-button">Reset all</button></div>
-          <fieldset class="filter-group"><legend>Content type</legend><label class="radio-line"><input type="radio" name="content-type" value="all" checked><span>All content</span></label><label class="radio-line"><input type="radio" name="content-type" value="article"><span>Help articles</span></label><label class="radio-line"><input type="radio" name="content-type" value="discussion"><span>Community posts</span></label></fieldset>
-          <fieldset class="filter-group"><legend>Intended audience</legend><label class="radio-line"><input type="radio" name="audience" value="all" checked><span>All audiences</span></label><label class="radio-line"><input type="radio" name="audience" value="customers"><span>Customers</span></label><label class="radio-line"><input type="radio" name="audience" value="partners"><span>Partners</span></label><label class="radio-line"><input type="radio" name="audience" value="teams"><span>Internal teams</span></label></fieldset>
-          <label class="favorites-control"><input id="favorites-only" type="checkbox"><span>★ &nbsp; Favourites only</span></label>
-          <p class="filter-note">Filters remain selected when you refresh this page.</p>
-        </aside>
-        <div class="results" aria-label="Filtered resources"><div class="result-toolbar"><div class="result-meta"><span class="result-marker"></span><span id="results-count" aria-live="polite">Loading resources…</span></div><label for="sort-order">Sort by <select id="sort-order"><option value="latest">Most recent</option><option value="az">A–Z</option></select></label></div><div id="results-list" class="results-list"></div><div id="no-results" class="empty-state" hidden><span aria-hidden="true">⌕</span><h3>No matching resources</h3><p>Try another search or reset your filters.</p><button type="button" class="empty-reset">Reset filters</button></div></div>
+        <div><p class="eyebrow">SUPPORT THAT MAKES SENSE</p><h1 id="hero-title">The right answers.<br><em>One place.</em></h1><p class="hero-lede">Find useful resources and see exactly which community posts have new activity.</p><a class="primary-link" href="#browse">Browse resources <span aria-hidden="true">↓</span></a></div>
+        <div class="hero-panel"><p class="panel-label">COMMUNITY ACTIVITY</p><h2>Every indicator has a reason.</h2><p>Post-level read tracking. Folder and topic summaries. Different rules for members and moderators.</p><div class="panel-note"><span class="unread-dot" aria-hidden="true"></span> New replies stay visible until their post is opened.</div></div>
       </div>
     </section>
-    <section class="about-section" id="how-it-works"><div class="container"><p class="section-overline">ABOUT THIS PROJECT</p><h2>Thoughtful interfaces.<br><em>Practical engineering.</em></h2><p>This independent project demonstrates responsive frontend development, accessible form controls, persistent filters, community-specific navigation, and client-side favourites. Everything on this page uses fictional example data.</p><div class="tech-pills"><span>Semantic HTML</span><span>Responsive CSS</span><span>Vanilla JavaScript</span><span>Accessibility</span><span>Node.js tests</span></div><a href="https://github.com/jakeybakey1233/community-hub-demo" target="_blank" rel="noreferrer">Explore the source code <span aria-hidden="true">↗</span></a></div></section>
+    <nav class="container breadcrumbs" aria-label="Breadcrumb"><a href="#/browse">Home</a><span aria-hidden="true">/</span><span id="breadcrumb-current" aria-current="page">All communities</span></nav>
+    <section class="container scenario-panel" aria-labelledby="scenario-title">
+      <div class="scenario-heading"><div><h2 id="scenario-title">Try the activity rules</h2><p id="activity-summary"></p></div><button type="button" id="reset-demo" class="text-button">Reset demo</button></div>
+      <div class="viewer-control"><label for="viewer-role">View as</label><select id="viewer-role"><option value="member">Member</option><option value="moderator">Moderator</option></select><p>Your identity stays the same when you switch roles.</p></div>
+      <form id="scenario-form" class="scenario-form">
+        <div><label for="scenario-post">Add a reply to</label><select id="scenario-post"></select></div>
+        <div><label for="scenario-author">Reply as</label><select id="scenario-author"><option value="member">Another member</option><option value="you">You</option><option value="moderator">A moderator</option></select></div>
+        <div><label for="scenario-body">Example message <span>(optional)</span></label><input id="scenario-body" type="text" maxlength="1000" placeholder="Use fictional content"></div>
+        <button type="submit" class="secondary-button">Add example reply</button>
+      </form>
+      <p class="scenario-help">Own replies do not create unread activity. In moderator view, a moderator response removes a post from the unread queue. All changes stay in this browser.</p>
+    </section>
+    <div id="browse-view">
+      <section class="container communities-section" aria-labelledby="communities-title"><h2 id="communities-title">Community folders</h2><div id="folder-list" class="folder-grid"></div></section>
+      <section class="container resources-section" id="browse" aria-labelledby="browse-title">
+        <div class="section-heading"><p class="section-overline">EXPLORE RESOURCES</p><h2 id="browse-title">What can we help with?</h2><p class="muted">Search articles and discussions across the fictional communities.</p></div>
+        <form id="search-form" role="search" class="search-form"><label for="search-input">Search the hub</label><div class="search-line"><input id="search-input" type="search" maxlength="200" placeholder="Try billing, data or access" autocomplete="off"><button type="submit" class="search-button">Search</button></div></form>
+        <div class="layout">
+          <aside class="filter-panel" aria-labelledby="filters-heading">
+            <div class="filter-heading"><h3 id="filters-heading">Filters</h3><button type="button" id="reset-filters" class="text-button">Reset all</button></div>
+            <fieldset class="filter-group"><legend>Content type</legend><label class="radio-line"><input type="radio" name="content-type" value="all" checked><span>All content</span></label><label class="radio-line"><input type="radio" name="content-type" value="article"><span>Help articles</span></label><label class="radio-line"><input type="radio" name="content-type" value="discussion"><span>Community posts</span></label></fieldset>
+            <fieldset class="filter-group"><legend>Intended audience</legend><label class="radio-line"><input type="radio" name="audience" value="all" checked><span>All audiences</span></label><label class="radio-line"><input type="radio" name="audience" value="customers"><span>Customers</span></label><label class="radio-line"><input type="radio" name="audience" value="partners"><span>Partners</span></label><label class="radio-line"><input type="radio" name="audience" value="teams"><span>Internal teams</span></label></fieldset>
+            <label class="favorites-control"><input id="favorites-only" type="checkbox"><span>Favourites only</span></label><p class="filter-note">Filters and favourites are saved when browser storage is available.</p>
+          </aside>
+          <div class="results"><h3 id="results-heading" tabindex="-1">Resources</h3><div class="result-toolbar"><span id="results-count" role="status" aria-live="polite">Loading resources…</span><label for="sort-order">Sort by <select id="sort-order"><option value="latest">Most recent</option><option value="az">A–Z</option></select></label></div><div id="results-list" class="results-list"></div><div id="no-results" class="empty-state" hidden><h3>No matching resources</h3><p>Try another search or reset your filters.</p><button type="button" class="empty-reset secondary-button">Reset filters</button></div></div>
+        </div>
+      </section>
+    </div>
+    <section class="container detail-view" id="detail-view" aria-labelledby="detail-title" hidden><div id="detail-back"></div><p id="detail-eyebrow" class="section-overline"></p><h2 id="detail-title" tabindex="-1"></h2><div id="detail-content"></div></section>
+    <section class="about-section" aria-labelledby="about-title"><div class="container"><p class="section-overline">ABOUT THIS PROJECT</p><h2 id="about-title">Community engineering,<br><em>made visible.</em></h2><p>This public reconstruction explores support-community behaviours relevant to my Zendesk work at the Department for Education. The data and design are fictional; the code is an independent portfolio implementation.</p><div class="tech-pills"><span>Activity rules</span><span>Persistent state</span><span>Accessible controls</span><span>Pure functions</span><span>Regression tests</span></div><a href="https://github.com/jakeybakey1233/community-hub-demo/blob/main/docs/case-study.md" target="_blank" rel="noreferrer">Read the experience case study <span class="sr-only">(opens in a new tab)</span><span aria-hidden="true">↗</span></a></div></section>
   </main>
-  <footer class="footer"><div class="container footer-inner"><div><strong>Community Hub</strong><p>Independent development portfolio demonstration.</p></div><p>Fictional information · Not an official service</p></div></footer>
+  <div id="announcement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+  <footer class="footer"><div class="container footer-inner"><div><strong>Community Hub</strong><p>Jake Mason · Independent portfolio project</p></div><p>Fictional information · Not an official DfE service</p></div></footer>
 </body>
 </html>

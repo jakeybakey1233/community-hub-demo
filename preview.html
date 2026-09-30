@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A community support portfolio demo with post activity, persistent read status, audience filters and accessible navigation.">
+  <meta name="theme-color" content="#132f41">
+  <title>Community Hub | Jake Mason</title>
+  <style>
+:root {
+  font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  color: #1b3043;
+  background: #fafbf9;
+  font-synthesis: none;
+  --muted: #465d69;
+  --green: #205f4c;
+  --border: #cbd9d3;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; min-width: 320px; }
+button, input, select { font: inherit; }
+a { color: inherit; }
+button { cursor: pointer; }
+[hidden] { display: none !important; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible,
+[tabindex="-1"]:focus-visible { outline: 3px solid #ba6500; outline-offset: 4px; }
+.container { width: min(1120px, calc(100% - 64px)); margin-inline: auto; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.skip-link { position: absolute; z-index: 10; top: -80px; left: 12px; padding: 12px 16px; background: #fff; }
+.skip-link:focus { top: 12px; }
+.demo-ribbon { display: flex; justify-content: center; gap: 16px; padding: 8px 16px; background: #d9e9e2; color: #1f5a4d; text-align: center; font-size: 12px; font-weight: 750; letter-spacing: .7px; }
+.demo-ribbon span { font-weight: 400; letter-spacing: 0; }
+.site-header { background: #fff; border-bottom: 1px solid var(--border); }
+.header-inner { min-height: 87px; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.brand-mark { width: 42px; height: 42px; background: #173950; border-radius: 10px; display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 17px; }
+.brand strong, .brand small { display: block; }
+.brand strong { font-size: 19px; letter-spacing: -.5px; }
+.brand small { color: var(--muted); font-size: 12px; margin-top: 3px; }
+.top-nav { display: flex; gap: 30px; font-size: 14px; font-weight: 650; }
+.top-nav a { padding: 12px 0; text-underline-offset: 4px; }
+.hero { background: #132f41; color: #fff; }
+.hero-inner { display: grid; grid-template-columns: 1.2fr 1fr; gap: 70px; align-items: center; padding: 60px 0; }
+.eyebrow, .section-overline, .panel-label { font-size: 12px; font-weight: 750; letter-spacing: 1.7px; }
+.eyebrow { color: #bcebd2; margin: 0 0 20px; }
+.hero h1 { margin: 0; font-size: clamp(36px, 4vw, 56px); line-height: 1.15; letter-spacing: -2px; }
+.hero h1 em { color: #a9d9be; font-style: normal; }
+.hero-lede { max-width: 440px; margin: 24px 0; color: #d7e5e7; font-size: 17px; line-height: 1.7; }
+.primary-link { display: inline-flex; gap: 24px; padding: 15px 20px; background: #9cd8b8; color: #163749; text-decoration: none; font-weight: 750; border-radius: 6px; }
+.primary-link:hover { background: #bcf0d3; }
+.hero-panel { background: #fff; color: #16354a; border-radius: 14px; padding: 32px; box-shadow: 0 18px 30px #051d3040; }
+.panel-label { color: var(--green); margin: 0 0 20px; }
+.hero-panel h2 { font-size: 27px; line-height: 1.25; letter-spacing: -.7px; }
+.hero-panel p:not(.panel-label) { color: var(--muted); font-size: 16px; line-height: 1.7; }
+.panel-note { display: flex; gap: 10px; align-items: center; border-top: 1px solid var(--border); padding-top: 20px; font-size: 14px; line-height: 1.6; }
+.breadcrumbs { display: flex; gap: 12px; align-items: center; padding: 26px 0; font-size: 14px; color: var(--muted); }
+.breadcrumbs a { color: var(--green); padding: 6px 0; }
+.scenario-panel { padding: 24px; margin-bottom: 40px; border: 1px solid #b8cfc2; border-radius: 10px; background: #edf5ef; }
+.scenario-heading { display: flex; justify-content: space-between; align-items: start; gap: 20px; }
+.scenario-heading h2 { font-size: 20px; margin: 0 0 8px; }
+.scenario-heading p { margin: 0; font-size: 14px; color: var(--muted); }
+.text-button { color: var(--green); background: none; border: 0; min-height: 44px; padding: 5px 0; font-size: 14px; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.viewer-control { display: flex; align-items: center; gap: 12px; margin: 20px 0; flex-wrap: wrap; }
+.viewer-control p { margin: 0; color: var(--muted); font-size: 14px; }
+.viewer-control label { font-weight: 700; font-size: 14px; }
+select, input[type="text"] { border: 1px solid #829c92; border-radius: 5px; background: #fff; color: #1b3043; padding: 10px 12px; min-height: 44px; max-width: 100%; }
+.scenario-form { display: grid; grid-template-columns: 1.6fr 1fr 1.2fr auto; gap: 14px; align-items: end; }
+.scenario-form > div { min-width: 0; }
+.scenario-form label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+.scenario-form label span { font-weight: 400; }
+.scenario-form select, .scenario-form input { width: 100%; }
+.scenario-help { font-size: 14px; color: var(--muted); line-height: 1.65; margin-bottom: 0; }
+.secondary-button { min-height: 44px; padding: 10px 16px; border: 1px solid var(--green); border-radius: 5px; background: var(--green); color: #fff; font-size: 14px; font-weight: 700; }
+.secondary-button:hover, .search-button:hover { background: #164c3d; }
+.communities-section { margin-bottom: 45px; }
+.communities-section h2 { font-size: 22px; margin: 0 0 18px; }
+.folder-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.navigation-card { display: block; padding: 23px; border: 1px solid var(--border); border-radius: 9px; background: #fff; text-decoration: none; }
+.navigation-card:hover { border-color: var(--green); }
+.navigation-card h3 { margin: 0 0 10px; font-size: 19px; text-decoration: underline; text-underline-offset: 4px; }
+.navigation-card p { color: var(--muted); font-size: 14px; line-height: 1.6; margin: 0 0 16px; }
+.activity-badge { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 700; padding: 4px 8px; border-radius: 4px; background: #eef2f0; color: #465d69; }
+.activity-badge.unread { color: #164d8c; background: #eaf1fd; }
+.unread-dot { width: 9px; height: 9px; flex: none; display: inline-block; border-radius: 50%; background: #1764c0; }
+.resources-section { padding-bottom: 70px; }
+.section-heading { margin: 0 0 24px; }
+.section-overline { color: var(--green); margin: 0 0 12px; }
+.section-heading h2 { margin: 0; font-size: clamp(27px, 3vw, 34px); letter-spacing: -1px; }
+.muted { font-size: 15px; color: var(--muted); line-height: 1.6; }
+.search-form { margin-bottom: 28px; }
+.search-form > label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+.search-line { display: flex; align-items: center; border: 1px solid #829c92; background: #fff; border-radius: 6px; overflow: hidden; }
+.search-line input { flex: 1; min-width: 0; border: 0; padding: 17px; font-size: 16px; }
+.search-line input::placeholder, .scenario-form input::placeholder { color: #526675; opacity: 1; }
+.search-line input:focus-visible { outline-offset: -3px; }
+.search-button { border: 0; margin: 5px; min-height: 44px; padding: 0 20px; border-radius: 4px; background: var(--green); color: #fff; font-weight: 700; }
+.layout { display: grid; grid-template-columns: 245px minmax(0, 1fr); gap: 25px; align-items: start; }
+.filter-panel { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+.filter-heading { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+.filter-heading h3 { margin: 0; font-size: 17px; }
+.filter-group { padding: 15px 0; border: 0; border-bottom: 1px solid var(--border); margin: 20px 0 0; }
+.filter-group legend { font-size: 14px; font-weight: 750; padding: 0; }
+.radio-line { display: flex; gap: 10px; align-items: center; padding: 10px 0; font-size: 14px; color: var(--muted); cursor: pointer; }
+.radio-line input { width: 18px; height: 18px; margin: 0; accent-color: var(--green); }
+.favorites-control { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 650; cursor: pointer; padding: 20px 0 5px; }
+.favorites-control input { width: 18px; height: 18px; accent-color: var(--green); }
+.filter-note { font-size: 13px; color: var(--muted); line-height: 1.7; margin: 14px 0 0; }
+#results-heading { margin: 0 0 12px; font-size: 18px; }
+.result-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding-bottom: 20px; font-size: 14px; }
+.result-toolbar label { color: var(--muted); }
+.result-toolbar select { font-size: 14px; margin-left: 5px; padding: 8px; }
+.results-list { display: grid; gap: 14px; }
+.resource-card { display: flex; gap: 16px; border: 1px solid var(--border); background: #fff; border-radius: 8px; padding: 22px 18px; }
+.resource-icon { flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 9px; font-size: 22px; }
+.resource-icon.article { background: #e5f3ed; color: #1c6049; }
+.resource-icon.discussion { background: #eff0fc; color: #514182; }
+.resource-body { min-width: 0; flex: 1; }
+.resource-labels { display: flex; gap: 9px; flex-wrap: wrap; align-items: center; }
+.type-tag { font-size: 11px; font-weight: 750; letter-spacing: .5px; color: #1c6049; }
+.type-tag.discussion { color: #514182; }
+.audience-tag { color: var(--muted); font-size: 13px; }
+.resource-body h3 { margin: 11px 0 8px; font-size: 17px; line-height: 1.5; }
+.resource-body h3 a { text-underline-offset: 4px; }
+.resource-description { font-size: 14px; line-height: 1.75; margin: 0 0 14px; color: var(--muted); }
+.resource-footer { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: var(--muted); font-size: 13px; line-height: 1.6; }
+.moderator-tag { color: #1c6049; background: #e6f5ed; padding: 4px 7px; border-radius: 3px; font-weight: 650; }
+.favorite-button { flex: none; align-self: flex-start; border: 0; background: #f7f3e9; min-width: 44px; min-height: 44px; padding: 5px; border-radius: 6px; font-size: 25px; color: #855000; }
+.empty-state { border: 1px dashed #829c92; background: #fff; border-radius: 8px; text-align: center; padding: 35px 25px; }
+.empty-state p { color: var(--muted); line-height: 1.6; }
+.detail-view { padding-bottom: 60px; }
+.back-link { display: inline-block; padding: 12px 0; color: var(--green); margin-bottom: 22px; }
+#detail-title { font-size: clamp(27px, 3vw, 38px); line-height: 1.3; letter-spacing: -.7px; margin: 0 0 26px; max-width: 900px; }
+.view-note { color: var(--muted); font-size: 15px; line-height: 1.7; margin: 0 0 24px; }
+.post-body { border: 1px solid var(--border); background: #fff; border-radius: 9px; padding: 28px; max-width: 900px; }
+.post-body p { line-height: 1.8; overflow-wrap: anywhere; }
+.post-meta { color: var(--muted); font-size: 14px; }
+.post-status { display: flex; align-items: center; flex-wrap: wrap; gap: 20px; margin: 24px 0; }
+.reply-list { padding: 0; list-style: none; max-width: 900px; }
+.reply { border-left: 3px solid #91bda8; padding: 8px 23px; margin: 18px 0; background: #f0f5f1; }
+.reply p { line-height: 1.75; overflow-wrap: anywhere; }
+.about-section { background: #eaf1eb; padding: 56px 0; }
+.about-section h2 { color: #183b45; font-size: 35px; line-height: 1.2; letter-spacing: -1px; }
+.about-section h2 em { color: var(--green); font-style: normal; }
+.about-section p:not(.section-overline) { max-width: 730px; font-size: 16px; line-height: 1.8; color: var(--muted); }
+.tech-pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 24px 0; }
+.tech-pills span { color: #1c6049; border: 1px solid #93b49e; background: #f7fbf7; border-radius: 4px; padding: 8px 10px; font-size: 13px; font-weight: 650; }
+.about-section a { color: var(--green); font-weight: 700; text-underline-offset: 4px; }
+.footer { background: #132f41; color: #dde7e9; padding: 28px 0; }
+.footer-inner { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+.footer p { font-size: 13px; color: #c1d1d5; line-height: 1.6; }
+@media (max-width: 1000px) {
+  .hero-inner { gap: 35px; }
+  .scenario-form { grid-template-columns: 1.5fr 1fr; }
+}
+@media (max-width: 720px) {
+  .container { width: calc(100% - 34px); }
+  .header-inner { min-height: 76px; }
+  .top-nav { gap: 16px; font-size: 13px; }
+  .demo-ribbon span { display: none; }
+  .hero-inner { grid-template-columns: 1fr; padding: 42px 0; gap: 28px; }
+  .hero-panel { padding: 24px; }
+  .layout { grid-template-columns: 1fr; }
+  .filter-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
+  .filter-heading, .favorites-control, .filter-note { grid-column: 1 / -1; }
+  .filter-group { border-bottom: 0; }
+  .folder-grid { grid-template-columns: 1fr; }
+  .scenario-panel { padding: 20px; }
+  .scenario-form { grid-template-columns: 1fr; }
+  .footer-inner { align-items: flex-start; flex-direction: column; gap: 0; }
+}
+@media (max-width: 420px) {
+  .brand strong { font-size: 17px; }
+  .brand small { font-size: 11px; }
+  .top-nav a:first-child { display: none; }
+  .top-nav { gap: 0; }
+  .header-inner { gap: 12px; }
+  .resource-card { padding: 17px 12px; gap: 10px; }
+  .resource-icon { display: none; }
+  .result-toolbar { align-items: flex-start; flex-direction: column; }
+  .filter-panel { padding: 16px; gap: 0 12px; }
+  .post-body { padding: 20px; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+</style>
+  <script type="module">
+// data.js
+/** Public, fictional fixtures. No employer content, identities or endpoints. */
+const resources = [
+  { id: 'r1', type: 'article', audience: 'customers', title: 'Understanding your billing summary', description: 'A guide to reviewing a fictional monthly account statement.', topic: 'Billing', date: '2026-09-24', minutes: 6 },
+  { id: 'r2', type: 'discussion', audience: 'partners', title: 'How do you validate a scheduled file import?', description: 'Community members share approaches to checking data quality before import.', topic: 'Data quality', topicId: 'quality', date: '2026-09-21' },
+  { id: 'r3', type: 'article', audience: 'teams', title: 'Preparing for a routine data migration', description: 'A practical checklist for organising a fictional test migration.', topic: 'Migration', date: '2026-09-18', minutes: 4 },
+  { id: 'r4', type: 'discussion', audience: 'customers', title: 'Account access: common questions', description: 'A discussion about resolving common sign-in and account-access scenarios.', topic: 'Account access', topicId: 'access', date: '2026-09-15' },
+  { id: 'r5', type: 'article', audience: 'partners', title: 'Getting started with data quality checks', description: 'How to set up simple, repeatable checks before sharing a data extract.', topic: 'Data quality', date: '2026-09-12', minutes: 5 },
+  { id: 'r6', type: 'discussion', audience: 'teams', title: 'Sharing good practices for release checklists', description: 'A space for practical tips about preparing and reviewing a software release.', topic: 'Release management', topicId: 'releases', date: '2026-09-07' },
+  { id: 'r7', type: 'article', audience: 'customers', title: 'Maintaining accurate account details', description: 'Example steps for checking contact preferences and profile details.', topic: 'Account management', date: '2026-08-29', minutes: 3 },
+  { id: 'r8', type: 'discussion', audience: 'partners', title: 'Best practices for resolving rejected uploads', description: 'Explore ways to diagnose and resolve example file validation errors.', topic: 'Troubleshooting', topicId: 'uploads', date: '2026-08-22' },
+  { id: 'r9', type: 'article', audience: 'teams', title: 'Introduction to evidence and audit trails', description: 'Building an auditable process for routine technical tasks.', topic: 'Reporting', date: '2026-08-19', minutes: 7 }
+];
+const audiences = { all: 'All communities', customers: 'Customers', partners: 'Partners', teams: 'Internal teams' };
+const folders = [
+  { id: 'operations', title: 'Data operations', description: 'Imports, uploads and release practices.' },
+  { id: 'support', title: 'Support and services', description: 'Account questions and shared guidance.' }
+];
+const topics = [
+  { id: 'quality', folderId: 'operations', title: 'Data quality', description: 'Checking data before it reaches another system.' },
+  { id: 'releases', folderId: 'operations', title: 'Release management', description: 'Practical checks for predictable changes.' },
+  { id: 'uploads', folderId: 'operations', title: 'Troubleshooting', description: 'Understanding and resolving upload failures.' },
+  { id: 'access', folderId: 'support', title: 'Account access', description: 'Questions about signing in and account details.' }
+];
+const postBodies = {
+  r2: 'We are preparing a scheduled import into a fictional reporting system. Which checks would you run to confirm the file is complete and consistent before scheduling it?',
+  r4: 'A user can open the public help articles but is having trouble signing in. What should we check before passing the query to the support team? Please keep any examples fictional.',
+  r6: 'Our team is writing a release checklist for a fictional service. We already check the main user journeys and any data changes. What useful checks would you add?',
+  r8: 'Our sample upload failed validation. The report mentions a missing column and an inconsistent date format. What would you investigate first?'
+};
+const posts = resources.filter(r => r.type === 'discussion').map(r => ({
+  ...r, authorId: 'demo-member', createdAt: `${r.date}T09:00:00Z`,
+  body: postBodies[r.id]
+}));
+const seedReplies = [
+  { id: 'seed-1', postId: 'r2', authorId: 'demo-moderator', authorRole: 'moderator', createdAt: '2026-09-21T10:00:00Z', body: 'Start with a small test file and verify the required fields. This is a fictional moderator response.' },
+  { id: 'seed-2', postId: 'r2', authorId: 'demo-member', authorRole: 'member', createdAt: '2026-09-24T09:00:00Z', body: 'We also compare the accepted and rejected record counts before scheduling the import.' },
+  { id: 'seed-3', postId: 'r4', authorId: 'demo-member', authorRole: 'member', createdAt: '2026-09-23T09:00:00Z', body: 'Is there a checklist for investigating a sign-in problem without collecting personal information?' },
+  { id: 'seed-4', postId: 'r6', authorId: 'demo-you', authorRole: 'member', createdAt: '2026-09-24T10:00:00Z', body: 'My own reply should not create a blue dot for me.' },
+  { id: 'seed-5', postId: 'r8', authorId: 'demo-member', authorRole: 'member', createdAt: '2026-09-24T11:00:00Z', body: 'Our fictional upload was rejected because a required column was missing. What would you check first?' }
+];
+const authorNames = { 'demo-you': 'You', 'demo-member': 'Alex Morgan', 'demo-moderator': 'Community moderator' };
+function articleParagraphs(item) {
+  return [item.description, 'Start by checking the source information against a known example. Record what you expected, what happened, and which checks you performed.', 'Use a small test case before changing a wider process. Keep an audit trail of the result and ask the appropriate support team when the evidence is unclear.', 'This article is fictional portfolio content. It is not operational guidance for an employer service.'];
+}
+
+
+// filters.js
+/** Pure functions shared by the browser interface and Node's built-in test runner. */
+const defaultFilters = Object.freeze({
+  type: 'all', audience: 'all', query: '', favoritesOnly: false, sort: 'latest'
+});
+const validTypes = new Set(['all', 'article', 'discussion']);
+const validAudiences = new Set(['all', 'customers', 'partners', 'teams']);
+
+function cleanFilters(input = {}) {
+  return {
+    type: validTypes.has(input.type) ? input.type : 'all',
+    audience: validAudiences.has(input.audience) ? input.audience : 'all',
+    query: typeof input.query === 'string' ? input.query.slice(0, 200) : '',
+    favoritesOnly: input.favoritesOnly === true,
+    sort: input.sort === 'az' ? 'az' : 'latest'
+  };
+}
+function filterResources(items, filters, favoriteIds = []) {
+  const f = cleanFilters(filters);
+  const needle = f.query.trim().toLocaleLowerCase('en-GB');
+  const favorites = new Set(favoriteIds);
+  return items.filter(item =>
+    (f.type === 'all' || item.type === f.type) &&
+    (f.audience === 'all' || item.audience === f.audience) &&
+    (!f.favoritesOnly || favorites.has(item.id)) &&
+    (!needle || [item.title, item.description, item.topic].some(text => text.toLocaleLowerCase('en-GB').includes(needle)))
+  ).sort((a, b) => f.sort === 'az' ? a.title.localeCompare(b.title, 'en-GB') : b.date.localeCompare(a.date));
+}
+
+
+// activity.js
+/** Activity decisions are pure; navigating a folder or topic cannot mark a post read. */
+const BASELINE = Date.parse('2026-09-22T00:00:00Z');
+const demoViewer = Object.freeze({ id: 'demo-you', role: 'member' });
+const stamp = value => typeof value === 'number' ? value : Date.parse(value);
+
+function latestActivity(post, comments) {
+  return Math.max(stamp(post.createdAt), ...comments.filter(c => c.postId === post.id).map(c => stamp(c.createdAt)).filter(Number.isFinite));
+}
+
+function isUnread(post, comments, viewer, readAt = BASELINE) {
+  const replies = comments.filter(c => c.postId === post.id);
+  // A reply by any moderator resolves the moderator queue for this demonstration.
+  if (viewer.role === 'moderator' && replies.some(c => c.authorRole === 'moderator')) return false;
+  const cutoff = Number.isFinite(stamp(readAt)) ? stamp(readAt) : BASELINE;
+  const activity = [{ authorId: post.authorId, createdAt: post.createdAt }, ...replies];
+  return activity.some(item => item.authorId !== viewer.id && stamp(item.createdAt) > cutoff);
+}
+
+function unreadPostIds(posts, comments, state, viewer) {
+  const reads = state.readByUser?.[viewer.id] ?? {};
+  return new Set(posts.filter(post => isUnread(post, comments, viewer, reads[post.id] ?? BASELINE)).map(post => post.id));
+}
+
+function markPostRead(state, post, comments, viewer) {
+  const previous = state.readByUser?.[viewer.id]?.[post.id] ?? BASELINE;
+  return { ...state, readByUser: { ...state.readByUser, [viewer.id]: {
+    ...state.readByUser?.[viewer.id], [post.id]: Math.max(previous, latestActivity(post, comments))
+  } } };
+}
+
+function cleanActivityState(input, validPostIds) {
+  const ids = new Set(validPostIds);
+  const roles = new Set(['member', 'moderator']);
+  const authors = new Set(['demo-you', 'demo-member', 'demo-moderator']);
+  const comments = Array.isArray(input?.comments) ? input.comments.filter(c =>
+    c && typeof c.id === 'string' && ids.has(c.postId) && authors.has(c.authorId) && roles.has(c.authorRole) &&
+    typeof c.body === 'string' && c.body.length <= 1000 && Number.isFinite(Date.parse(c.createdAt))
+  ).slice(-200).map(c => ({ id: c.id, postId: c.postId, authorId: c.authorId, authorRole: c.authorRole,
+    body: c.body, createdAt: new Date(c.createdAt).toISOString() })) : [];
+  const reads = input?.readByUser?.['demo-you'];
+  const readByUser = { 'demo-you': {} };
+  if (reads && typeof reads === 'object' && !Array.isArray(reads)) {
+    for (const id of ids) if (Number.isFinite(reads[id]) && reads[id] >= BASELINE && reads[id] <= Date.now()) readByUser['demo-you'][id] = reads[id];
+  }
+  return { comments, readByUser };
+}
+
+
+// storage.js
+function readPreference(storage, key, fallback) {
+  try { return JSON.parse(storage.getItem(key)) ?? fallback; } catch { return fallback; }
+}
+function writePreference(storage, key, value) {
+  try { storage.setItem(key, JSON.stringify(value)); return true; } catch { return false; }
+}
+
+
+// main.js
+
+const FILTER_KEY = 'community-hub-demo.filters.v1';
+const FAVORITE_KEY = 'community-hub-demo.favorites.v1';
+const ACTIVITY_KEY = 'community-hub-demo.activity.v2';
+const $ = selector => document.querySelector(selector);
+const $$ = selector => [...document.querySelectorAll(selector)];
+// Access to localStorage itself can throw, before any getItem call.
+let storage;
+try { storage = window.localStorage; } catch { storage = null; }
+let filters = cleanFilters({ ...defaultFilters, ...readPreference(storage, FILTER_KEY, {}) });
+const saved = readPreference(storage, FAVORITE_KEY, []);
+let favorites = new Set(Array.isArray(saved) ? saved.filter(id => resources.some(r => r.id === id)) : []);
+let activity = cleanActivityState(readPreference(storage, ACTIVITY_KEY, {}), posts.map(p => p.id));
+let viewer = { ...demoViewer };
+let route = { kind: 'browse', id: null };
+const comments = () => [...seedReplies, ...activity.comments];
+const unread = () => unreadPostIds(posts, comments(), activity, viewer);
+const saveActivity = () => writePreference(storage, ACTIVITY_KEY, activity);
+
+function el(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+const date = iso => new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(iso.length === 10 ? `${iso}T12:00:00Z` : iso));
+function link(text, href, className) { const a = el('a', className, text); a.href = href; return a; }
+function statusBadge(count) {
+  const badge = el('span', count ? 'activity-badge unread' : 'activity-badge', count ? `${count} unread ${count === 1 ? 'post' : 'posts'}` : 'All read');
+  if (count) { const dot = el('span', 'unread-dot'); dot.setAttribute('aria-hidden', 'true'); badge.prepend(dot); }
+  return badge;
+}
+function postBadge(isNew) {
+  const badge = el('span', isNew ? 'activity-badge unread' : 'activity-badge', isNew ? 'New activity' : 'Read');
+  if (isNew) { const dot = el('span', 'unread-dot'); dot.setAttribute('aria-hidden', 'true'); badge.prepend(dot); }
+  return badge;
+}
+function announce(message) { $('#announcement').textContent = message; }
+function backLink(text, href) { return link(`← ${text}`, href, 'back-link'); }
+
+function createCard(item, unreadIds) {
+  const card = el('article', 'resource-card');
+  card.dataset.resourceId = item.id;
+  const icon = el('div', `resource-icon ${item.type}`, item.type === 'article' ? '▤' : '◌');
+  icon.setAttribute('aria-hidden', 'true');
+  const body = el('div', 'resource-body');
+  const labels = el('div', 'resource-labels');
+  labels.append(el('span', `type-tag ${item.type}`, item.type === 'article' ? 'HELP ARTICLE' : 'COMMUNITY POST'));
+  labels.append(el('span', 'audience-tag', audiences[item.audience]));
+  if (item.type === 'discussion') labels.append(postBadge(unreadIds.has(item.id)));
+  const heading = el('h3');
+  const headingLink = link(item.title, `#/${item.type === 'article' ? 'article' : 'post'}/${item.id}`);
+  headingLink.dataset.focusKey = `resource-${item.id}`;
+  heading.append(headingLink);
+  const footer = el('div', 'resource-footer');
+  footer.append(el('span', '', item.topic), el('span', '', '·'), el('span', '', date(item.date)));
+  if (item.type === 'discussion') {
+    const replies = comments().filter(c => c.postId === item.id);
+    footer.append(el('span', '', `· ${replies.length} ${replies.length === 1 ? 'reply' : 'replies'}`));
+    if (replies.some(c => c.authorRole === 'moderator')) footer.append(el('span', 'moderator-tag', 'Moderator replied'));
+  } else footer.append(el('span', '', `· ${item.minutes} min read`));
+  body.append(labels, heading, el('p', 'resource-description', item.description), footer);
+  const save = el('button', 'favorite-button', favorites.has(item.id) ? '★' : '☆');
+  save.type = 'button';
+  save.dataset.focusKey = `favorite-${item.id}`;
+  save.setAttribute('aria-label', `${favorites.has(item.id) ? 'Remove' : 'Add'} ${item.title} ${favorites.has(item.id) ? 'from' : 'to'} favourites`);
+  save.setAttribute('aria-pressed', String(favorites.has(item.id)));
+  save.addEventListener('click', () => {
+    const wasSaved = favorites.has(item.id);
+    wasSaved ? favorites.delete(item.id) : favorites.add(item.id);
+    writePreference(storage, FAVORITE_KEY, [...favorites]);
+    render();
+    announce(wasSaved ? 'Resource removed from favourites.' : 'Resource saved to favourites.');
+  });
+  card.append(icon, body, save);
+  return card;
+}
+function topicPosts(id) { return posts.filter(p => p.topicId === id); }
+function folderPosts(id) { const ids = new Set(topics.filter(t => t.folderId === id).map(t => t.id)); return posts.filter(p => ids.has(p.topicId)); }
+function navigationCard(item, kind, items, unreadIds) {
+  const card = link('', `#/${kind}/${item.id}`, 'navigation-card');
+  card.append(el('h3', '', item.title), el('p', '', item.description), statusBadge(items.filter(p => unreadIds.has(p.id)).length));
+  return card;
+}
+function renderBrowse(unreadIds) {
+  $('#folder-list').replaceChildren(...folders.map(f => navigationCard(f, 'folder', folderPosts(f.id), unreadIds)));
+  const matches = filterResources(resources, filters, [...favorites]);
+  $('#results-list').replaceChildren(...matches.map(item => createCard(item, unreadIds)));
+  $('#results-count').textContent = `${matches.length} ${matches.length === 1 ? 'resource' : 'resources'} found`;
+  $('#no-results').hidden = matches.length > 0;
+  writePreference(storage, FILTER_KEY, filters);
+}
+function setDetail(title, eyebrow, back, breadcrumb) {
+  $('#detail-title').textContent = title;
+  $('#detail-eyebrow').textContent = eyebrow;
+  $('#detail-back').replaceChildren(back);
+  $('#breadcrumb-current').textContent = breadcrumb;
+  $('#detail-content').replaceChildren();
+}
+function renderFolder(unreadIds) {
+  const folder = folders.find(f => f.id === route.id);
+  if (!folder) return renderMissing();
+  setDetail(folder.title, 'COMMUNITY FOLDER', backLink('All resources', '#/browse'), folder.title);
+  const note = el('p', 'view-note', 'Opening this folder or a topic leaves individual posts unread. Open a post to record its activity as read.');
+  const grid = el('div', 'folder-grid');
+  grid.append(...topics.filter(t => t.folderId === folder.id).map(t => navigationCard(t, 'topic', topicPosts(t.id), unreadIds)));
+  $('#detail-content').append(note, grid);
+}
+function renderTopic(unreadIds) {
+  const topic = topics.find(t => t.id === route.id);
+  if (!topic) return renderMissing();
+  setDetail(topic.title, 'COMMUNITY TOPIC', backLink('Folder', `#/folder/${topic.folderId}`), topic.title);
+  const list = el('div', 'results-list');
+  list.append(...topicPosts(topic.id).map(item => createCard(item, unreadIds)));
+  $('#detail-content').append(el('p', 'view-note', 'The blue indicator belongs to the specific post with unseen activity.'), list);
+}
+function renderPost(unreadIds) {
+  const post = posts.find(p => p.id === route.id);
+  if (!post) return renderMissing();
+  setDetail(post.title, 'COMMUNITY DISCUSSION', backLink('Topic', `#/topic/${post.topicId}`), post.topic);
+  const body = el('article', 'post-body');
+  body.append(el('p', 'post-meta', `${authorNames[post.authorId]} · ${date(post.createdAt)} · ${audiences[post.audience]}`), el('p', '', post.body));
+  const status = el('div', 'post-status');
+  status.append(postBadge(unreadIds.has(post.id)));
+  const mark = el('button', 'secondary-button', 'Mark current activity as read');
+  mark.type = 'button'; mark.dataset.focusKey = 'mark-read';
+  mark.addEventListener('click', () => { activity = markPostRead(activity, post, comments(), viewer); saveActivity(); render(); announce('Current post activity marked as read.'); });
+  status.append(mark);
+  const heading = el('h3', '', 'Replies');
+  const replyList = el('ol', 'reply-list');
+  for (const reply of comments().filter(c => c.postId === post.id).sort((a,b) => a.createdAt.localeCompare(b.createdAt))) {
+    const li = el('li', 'reply');
+    li.append(el('p', 'post-meta', `${authorNames[reply.authorId]}${reply.authorRole === 'moderator' ? ' · Moderator' : ''} · ${date(reply.createdAt)}`), el('p', '', reply.body));
+    replyList.append(li);
+  }
+  if (!replyList.childElementCount) replyList.append(el('li', 'reply', 'No replies yet. Try adding one with the scenario controls.'));
+  $('#detail-content').append(body, status, heading, replyList, el('p', 'view-note', 'A reply added after this view opened remains new until you mark it read or open the post again.'));
+}
+function renderArticle() {
+  const item = resources.find(r => r.id === route.id && r.type === 'article');
+  if (!item) return renderMissing();
+  setDetail(item.title, 'HELP ARTICLE', backLink('All resources', '#/browse'), item.topic);
+  const article = el('article', 'post-body');
+  article.append(el('p', 'post-meta', `${date(item.date)} · ${item.minutes} min read · ${audiences[item.audience]}`), ...articleParagraphs(item).map(text => el('p', '', text)));
+  $('#detail-content').append(article);
+}
+function renderMissing() {
+  setDetail('Resource not found', 'UNKNOWN LINK', backLink('All resources', '#/browse'), 'Not found');
+  $('#detail-content').append(el('p', '', 'This resource is not part of the fictional demo. Use the link above to return to the explorer.'));
+}
+function render() {
+  const focusKey = document.activeElement?.dataset.focusKey;
+  const unreadIds = unread();
+  $('#activity-summary').textContent = `${unreadIds.size} ${unreadIds.size === 1 ? 'post has' : 'posts have'} unread activity for this ${viewer.role}.`;
+  $('#browse-view').hidden = route.kind !== 'browse';
+  $('#detail-view').hidden = route.kind === 'browse';
+  $('#hero').hidden = route.kind !== 'browse';
+  if (route.kind === 'browse') { $('#breadcrumb-current').textContent = audiences[filters.audience]; renderBrowse(unreadIds); }
+  else if (route.kind === 'folder') renderFolder(unreadIds);
+  else if (route.kind === 'topic') renderTopic(unreadIds);
+  else if (route.kind === 'post') renderPost(unreadIds);
+  else renderArticle();
+  if (focusKey) {
+    const replacement = $$('[data-focus-key]').find(node => node.dataset.focusKey === focusKey && node.closest('[hidden]') === null);
+    (replacement ?? (route.kind === 'browse' ? $('#results-heading') : $('#detail-title'))).focus({ preventScroll: true });
+  }
+}
+function routeFromHash() {
+  const parts = location.hash.slice(1).split('/').filter(Boolean);
+  const kind = ['folder', 'topic', 'post', 'article'].includes(parts[0]) ? parts[0] : 'browse';
+  const id = parts[1] ?? null;
+  const changed = kind !== route.kind || id !== route.id;
+  route = { kind, id };
+  // Only an explicit post navigation marks it read, never rendering or navigation to a parent.
+  if (changed && kind === 'post') {
+    const post = posts.find(p => p.id === id);
+    if (post) { activity = markPostRead(activity, post, comments(), viewer); saveActivity(); $('#scenario-post').value = id; }
+  }
+  render();
+  if (changed && kind !== 'browse') $('#detail-title').focus({ preventScroll: false });
+}
+function syncControls() {
+  $(`input[name="content-type"][value="${filters.type}"]`).checked = true;
+  $(`input[name="audience"][value="${filters.audience}"]`).checked = true;
+  $('#search-input').value = filters.query;
+  $('#favorites-only').checked = filters.favoritesOnly;
+  $('#sort-order').value = filters.sort;
+}
+function resetFilters() { filters = { ...defaultFilters }; syncControls(); render(); }
+function updateFilters(patch) { filters = cleanFilters({ ...filters, ...patch }); render(); }
+$$('input[name="content-type"]').forEach(input => input.addEventListener('change', () => updateFilters({ type: input.value })));
+$$('input[name="audience"]').forEach(input => input.addEventListener('change', () => updateFilters({ audience: input.value })));
+$('#favorites-only').addEventListener('change', e => updateFilters({ favoritesOnly: e.target.checked }));
+$('#sort-order').addEventListener('change', e => updateFilters({ sort: e.target.value }));
+$('#search-form').addEventListener('submit', e => { e.preventDefault(); updateFilters({ query: $('#search-input').value }); });
+$('#search-input').addEventListener('input', e => { if (!e.target.value) updateFilters({ query: '' }); });
+$('#reset-filters').addEventListener('click', resetFilters);
+$('.empty-reset').addEventListener('click', resetFilters);
+$('#viewer-role').addEventListener('change', e => { viewer = { ...viewer, role: e.target.value }; render(); announce(`Viewing activity as a ${viewer.role}.`); });
+$('#scenario-post').replaceChildren(...posts.map(post => { const option = el('option', '', post.title); option.value = post.id; return option; }));
+$('#scenario-form').addEventListener('submit', e => {
+  e.preventDefault();
+  if (activity.comments.length >= 200) { announce('The demo stores up to 200 added replies. Reset the demo to try again.'); return; }
+  const author = $('#scenario-author').value;
+  const authorId = author === 'you' ? viewer.id : author === 'moderator' ? 'demo-moderator' : 'demo-member';
+  const authorRole = author === 'moderator' || (author === 'you' && viewer.role === 'moderator') ? 'moderator' : 'member';
+  const newest = Math.max(Date.now() - 1, ...comments().map(c => Date.parse(c.createdAt)));
+  const timestamp = newest + 1;
+  const createdAt = new Date(timestamp).toISOString();
+  const body = $('#scenario-body').value.trim().slice(0,1000) || `A fictional reply from ${authorNames[authorId]} to demonstrate the activity rules.`;
+  activity = { ...activity, comments: [...activity.comments, { id: `added-${timestamp}`, postId: $('#scenario-post').value, authorId, authorRole, createdAt, body }] };
+  saveActivity(); render(); announce(`Example reply added by ${authorNames[authorId]}. Activity indicators updated.`);
+});
+$('#reset-demo').addEventListener('click', () => {
+  activity = cleanActivityState({}, posts.map(p => p.id));
+  favorites = new Set(); viewer = { ...demoViewer }; $('#viewer-role').value = 'member';
+  filters = { ...defaultFilters }; syncControls();
+  writePreference(storage, FAVORITE_KEY, []); saveActivity();
+  location.hash = '/browse'; route = { kind: 'browse', id: null }; render();
+  announce('Demo reset to the initial fictional activity.');
+});
+window.addEventListener('hashchange', routeFromHash);
+syncControls(); routeFromHash();
+
+</script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <div class="demo-ribbon">INDEPENDENT PORTFOLIO DEMO <span>Fictional communities and data</span></div>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#/browse" aria-label="Community Hub home"><span class="brand-mark" aria-hidden="true">CH</span><span><strong>Community Hub</strong><small>Support & knowledge</small></span></a>
+      <nav class="top-nav" aria-label="Main navigation">
+        <a href="#/browse">Explore</a>
+        <a href="https://github.com/jakeybakey1233/community-hub-demo" target="_blank" rel="noreferrer">Source code <span class="sr-only">(opens in a new tab)</span><span aria-hidden="true">↗</span></a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" tabindex="-1">
+    <section class="hero" id="hero" aria-labelledby="hero-title">
+      <div class="container hero-inner">
+        <div><p class="eyebrow">SUPPORT THAT MAKES SENSE</p><h1 id="hero-title">The right answers.<br><em>One place.</em></h1><p class="hero-lede">Find useful resources and see exactly which community posts have new activity.</p><a class="primary-link" href="#browse">Browse resources <span aria-hidden="true">↓</span></a></div>
+        <div class="hero-panel"><p class="panel-label">COMMUNITY ACTIVITY</p><h2>Every indicator has a reason.</h2><p>Post-level read tracking. Folder and topic summaries. Different rules for members and moderators.</p><div class="panel-note"><span class="unread-dot" aria-hidden="true"></span> New replies stay visible until their post is opened.</div></div>
+      </div>
+    </section>
+    <nav class="container breadcrumbs" aria-label="Breadcrumb"><a href="#/browse">Home</a><span aria-hidden="true">/</span><span id="breadcrumb-current" aria-current="page">All communities</span></nav>
+    <section class="container scenario-panel" aria-labelledby="scenario-title">
+      <div class="scenario-heading"><div><h2 id="scenario-title">Try the activity rules</h2><p id="activity-summary"></p></div><button type="button" id="reset-demo" class="text-button">Reset demo</button></div>
+      <div class="viewer-control"><label for="viewer-role">View as</label><select id="viewer-role"><option value="member">Member</option><option value="moderator">Moderator</option></select><p>Your identity stays the same when you switch roles.</p></div>
+      <form id="scenario-form" class="scenario-form">
+        <div><label for="scenario-post">Add a reply to</label><select id="scenario-post"></select></div>
+        <div><label for="scenario-author">Reply as</label><select id="scenario-author"><option value="member">Another member</option><option value="you">You</option><option value="moderator">A moderator</option></select></div>
+        <div><label for="scenario-body">Example message <span>(optional)</span></label><input id="scenario-body" type="text" maxlength="1000" placeholder="Use fictional content"></div>
+        <button type="submit" class="secondary-button">Add example reply</button>
+      </form>
+      <p class="scenario-help">Own replies do not create unread activity. In moderator view, a moderator response removes a post from the unread queue. All changes stay in this browser.</p>
+    </section>
+    <div id="browse-view">
+      <section class="container communities-section" aria-labelledby="communities-title"><h2 id="communities-title">Community folders</h2><div id="folder-list" class="folder-grid"></div></section>
+      <section class="container resources-section" id="browse" aria-labelledby="browse-title">
+        <div class="section-heading"><p class="section-overline">EXPLORE RESOURCES</p><h2 id="browse-title">What can we help with?</h2><p class="muted">Search articles and discussions across the fictional communities.</p></div>
+        <form id="search-form" role="search" class="search-form"><label for="search-input">Search the hub</label><div class="search-line"><input id="search-input" type="search" maxlength="200" placeholder="Try billing, data or access" autocomplete="off"><button type="submit" class="search-button">Search</button></div></form>
+        <div class="layout">
+          <aside class="filter-panel" aria-labelledby="filters-heading">
+            <div class="filter-heading"><h3 id="filters-heading">Filters</h3><button type="button" id="reset-filters" class="text-button">Reset all</button></div>
+            <fieldset class="filter-group"><legend>Content type</legend><label class="radio-line"><input type="radio" name="content-type" value="all" checked><span>All content</span></label><label class="radio-line"><input type="radio" name="content-type" value="article"><span>Help articles</span></label><label class="radio-line"><input type="radio" name="content-type" value="discussion"><span>Community posts</span></label></fieldset>
+            <fieldset class="filter-group"><legend>Intended audience</legend><label class="radio-line"><input type="radio" name="audience" value="all" checked><span>All audiences</span></label><label class="radio-line"><input type="radio" name="audience" value="customers"><span>Customers</span></label><label class="radio-line"><input type="radio" name="audience" value="partners"><span>Partners</span></label><label class="radio-line"><input type="radio" name="audience" value="teams"><span>Internal teams</span></label></fieldset>
+            <label class="favorites-control"><input id="favorites-only" type="checkbox"><span>Favourites only</span></label><p class="filter-note">Filters and favourites are saved when browser storage is available.</p>
+          </aside>
+          <div class="results"><h3 id="results-heading" tabindex="-1">Resources</h3><div class="result-toolbar"><span id="results-count" role="status" aria-live="polite">Loading resources…</span><label for="sort-order">Sort by <select id="sort-order"><option value="latest">Most recent</option><option value="az">A–Z</option></select></label></div><div id="results-list" class="results-list"></div><div id="no-results" class="empty-state" hidden><h3>No matching resources</h3><p>Try another search or reset your filters.</p><button type="button" class="empty-reset secondary-button">Reset filters</button></div></div>
+        </div>
+      </section>
+    </div>
+    <section class="container detail-view" id="detail-view" aria-labelledby="detail-title" hidden><div id="detail-back"></div><p id="detail-eyebrow" class="section-overline"></p><h2 id="detail-title" tabindex="-1"></h2><div id="detail-content"></div></section>
+    <section class="about-section" aria-labelledby="about-title"><div class="container"><p class="section-overline">ABOUT THIS PROJECT</p><h2 id="about-title">Community engineering,<br><em>made visible.</em></h2><p>This public reconstruction explores support-community behaviours relevant to my Zendesk work at the Department for Education. The data and design are fictional; the code is an independent portfolio implementation.</p><div class="tech-pills"><span>Activity rules</span><span>Persistent state</span><span>Accessible controls</span><span>Pure functions</span><span>Regression tests</span></div><a href="https://github.com/jakeybakey1233/community-hub-demo/blob/main/docs/case-study.md" target="_blank" rel="noreferrer">Read the experience case study <span class="sr-only">(opens in a new tab)</span><span aria-hidden="true">↗</span></a></div></section>
+  </main>
+  <div id="announcement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+  <footer class="footer"><div class="container footer-inner"><div><strong>Community Hub</strong><p>Jake Mason · Independent portfolio project</p></div><p>Fictional information · Not an official DfE service</p></div></footer>
+</body>
+</html>
